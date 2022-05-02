@@ -100,6 +100,9 @@ public class SnifferConfigInitializerTest {
         String agentOptions = "agent.ignore_suffix='.jpg,.jpeg,.js,.css,.png,.bmp,.gif,.ico,.mp3,.mp4,.html,.svg'";
         SnifferConfigInitializer.initializeCoreConfig(agentOptions);
         assertThat(Config.Agent.IGNORE_SUFFIX, is(".jpg,.jpeg,.js,.css,.png,.bmp,.gif,.ico,.mp3,.mp4,.html,.svg"));
+        String agentOptions2 = "agent.ingore_prefix=''";
+        SnifferConfigInitializer.initializeCoreConfig(agentOptions2);
+        assertThat(Config.Agent.IGNORE_PREFIX, is(""));
     }
 
     @Test

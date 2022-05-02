@@ -26,16 +26,16 @@ import org.apache.skywalking.apm.agent.core.logging.api.LogManager;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public class IgnoreSuffixPatternsWatcher extends AgentConfigChangeWatcher {
+public class IgnorePrefixPatternsWatcher extends AgentConfigChangeWatcher {
 
-    private static final ILog LOGGER = LogManager.getLogger(IgnoreSuffixPatternsWatcher.class);
+    private static final ILog LOGGER = LogManager.getLogger(IgnorePrefixPatternsWatcher.class);
 
-    private final AtomicReference<String> ignoreSuffixPatterns;
+    private final AtomicReference<String> ignorePrefixPatterns;
     private final ContextManagerExtendService contextManagerExtendService;
 
-    public IgnoreSuffixPatternsWatcher(final String propertyKey, ContextManagerExtendService contextManagerExtendService) {
+    public IgnorePrefixPatternsWatcher(final String propertyKey, ContextManagerExtendService contextManagerExtendService) {
         super(propertyKey);
-        this.ignoreSuffixPatterns = new AtomicReference(getDefaultValue());
+        this.ignorePrefixPatterns = new AtomicReference(getDefaultValue());
         this.contextManagerExtendService = contextManagerExtendService;
     }
 
@@ -44,7 +44,7 @@ public class IgnoreSuffixPatternsWatcher extends AgentConfigChangeWatcher {
             LOGGER.debug("Updating using new static config: {}", config);
         }
 
-        this.ignoreSuffixPatterns.set(config);
+        this.ignorePrefixPatterns.set(config);
         contextManagerExtendService.handleIgnorePrefixPatternsChanged();
     }
 
@@ -59,15 +59,15 @@ public class IgnoreSuffixPatternsWatcher extends AgentConfigChangeWatcher {
 
     @Override
     public String value() {
-        return ignoreSuffixPatterns.get();
+        return ignorePrefixPatterns.get();
     }
 
     private String getDefaultValue() {
-        return Config.Agent.IGNORE_SUFFIX;
+        return Config.Agent.IGNORE_PREFIX;
     }
 
-    public String getIgnoreSuffixPatterns() {
-        return ignoreSuffixPatterns.get();
+    public String getIgnorePrefixPatterns() {
+        return ignorePrefixPatterns.get();
     }
 
 }
