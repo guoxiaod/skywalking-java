@@ -19,47 +19,18 @@
 package org.apache.skywalking.apm.plugin.okhttp.common;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.skywalking.apm.agent.core.context.ContextManager;
 import org.apache.skywalking.apm.agent.core.context.tag.Tags;
-import org.apache.skywalking.apm.agent.core.context.trace.AbstractSpan;
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.EnhancedInstance;
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.InstanceConstructorInterceptor;
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.InstanceMethodsAroundInterceptor;
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.MethodInterceptResult;
 
 /**
- * {@link EventListenerInterceptor} intercept the synchronous http calls by the discovery of okhttp.
+ * {@link EventListenerInterceptor} intercept the EventListener methods.
  */
 public class EventListenerInterceptor implements InstanceMethodsAroundInterceptor, InstanceConstructorInterceptor {
-    public static class EventListenerModel {
-        public Long startTime;
-
-        public List<String> durations;
-
-        public EventListenerModel() {
-            durations = new ArrayList<>();
-            init();
-        }
-
-        public void record(String method) {
-            long duration = System.currentTimeMillis() - startTime;
-            durations.add(method + "=" + duration);
-        }
-
-        public void init() {
-            durations.clear();
-            startTime = System.currentTimeMillis();
-            durations.add("start=" + startTime);
-        }
-
-        @Override
-        public String toString() {
-            return String.join("\n", durations);
-        }
-    }
 
     @Override
     public void onConstruct(EnhancedInstance objInst, Object[] allArguments) {
@@ -68,22 +39,24 @@ public class EventListenerInterceptor implements InstanceMethodsAroundIntercepto
     @Override
     public void beforeMethod(EnhancedInstance objInst, Method method, Object[] allArguments, Class<?>[] argumentsTypes,
                              MethodInterceptResult result) {
+        if (allArguments.length == 0) {
+            return ;
+        }
         String methodName = method.getName();
-        EventListenerModel model = (EventListenerModel) objInst.getSkyWalkingDynamicField();
-        if (model == null) {
-            model = new EventListenerModel();
-            objInst.setSkyWalkingDynamicField(model);
-        } else if (methodName.equals("callStart") || methodName.equals("fetchStart")) {
-            model.init();
+        EnhancedInstance realcall = (EnhancedInstance) allArguments[0];
+        EnhanceRealCallInfo info = (EnhanceRealCallInfo) realcall.getSkyWalkingDynamicField();
+
+        HttpMetric metric = info.getHttpMetric();
+        if (methodName.equals("callStart") || methodName.equals("fetchStart")) {
+            metric.init();
         }
 
-        model.record(methodName);
+        metric.record(methodName);
 
         if (methodName.equals("callEnd")
                 || methodName.equals("callFailed")
                 || methodName.equals("fetchEnd")) {
-            AbstractSpan span = ContextManager.activeSpan();
-            Tags.HTTP.DURATIONS.set(span, model.toString());
+            Tags.HTTP.DURATIONS.set(info.getSpan(), metric.toString());
         }
     }
 
