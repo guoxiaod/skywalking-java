@@ -52,7 +52,8 @@ public class CallInterceptor implements InstanceMethodsAroundInterceptor {
     @Override
     public void beforeMethod(EnhancedInstance objInst, Method method, Object[] allArguments, Class<?>[] argumentsTypes,
             MethodInterceptResult result) throws Throwable {
-        Request request = (Request) objInst.getSkyWalkingDynamicField();
+        EnhanceRealCallInfo info = (EnhanceRealCallInfo) objInst.getSkyWalkingDynamicField();
+        Request request = (Request) info.getRequest();
         HttpUrl requestUrl = request.url();
         AbstractSpan span = ContextManager.createExitSpan(requestUrl.uri()
                 .getPath(), requestUrl.host() + ":" + requestUrl.port());
@@ -71,6 +72,7 @@ public class CallInterceptor implements InstanceMethodsAroundInterceptor {
             }
             FIELD_HEADERS_OF_REQUEST.set(request, headerBuilder.build());
         }
+        info.setSpan(span);
     }
 
     @Override

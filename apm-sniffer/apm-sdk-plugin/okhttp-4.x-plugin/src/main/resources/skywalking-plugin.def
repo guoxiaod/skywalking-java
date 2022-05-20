@@ -17,3 +17,4 @@
 okhttp-4.x=org.apache.skywalking.apm.plugin.okhttp.v4.define.RealCallInstrumentation
 okhttp-4.x=org.apache.skywalking.apm.plugin.okhttp.v4.define.CallbackInstrumentation
 okhttp-4.x=org.apache.skywalking.apm.plugin.okhttp.v4.define.AsyncCallInstrumentation
+okhttp-4.x=org.apache.skywalking.apm.plugin.okhttp.v4.define.EventListenerInstrumentation

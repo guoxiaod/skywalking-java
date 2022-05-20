@@ -55,7 +55,8 @@ public class RealCallInterceptor implements InstanceMethodsAroundInterceptor, In
 
     @Override
     public void onConstruct(EnhancedInstance objInst, Object[] allArguments) {
-        objInst.setSkyWalkingDynamicField(allArguments[1]);
+        EnhanceRealCallInfo info = new EnhanceRealCallInfo((Request) allArguments[1], new HttpMetric());
+        objInst.setSkyWalkingDynamicField(info);
     }
 
     /**
@@ -68,7 +69,8 @@ public class RealCallInterceptor implements InstanceMethodsAroundInterceptor, In
     @Override
     public void beforeMethod(EnhancedInstance objInst, Method method, Object[] allArguments, Class<?>[] argumentsTypes,
             MethodInterceptResult result) throws Throwable {
-        Request request = (Request) objInst.getSkyWalkingDynamicField();
+        EnhanceRealCallInfo info = (EnhanceRealCallInfo) objInst.getSkyWalkingDynamicField();
+        Request request = info.getRequest();
 
         ContextCarrier contextCarrier = new ContextCarrier();
         HttpUrl requestUrl = request.url();
@@ -88,6 +90,7 @@ public class RealCallInterceptor implements InstanceMethodsAroundInterceptor, In
             }
             FIELD_HEADERS_OF_REQUEST.set(request, headerBuilder.build());
         }
+        info.setSpan(span);
     }
 
     /**

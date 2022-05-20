@@ -20,6 +20,7 @@ package org.apache.skywalking.apm.plugin.okhttp.common;
 
 import okhttp3.Request;
 import org.apache.skywalking.apm.agent.core.context.ContextManager;
+import org.apache.skywalking.apm.agent.core.context.trace.AbstractSpan;
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.EnhancedInstance;
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.InstanceConstructorInterceptor;
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.InstanceMethodsAroundInterceptor;
@@ -37,9 +38,10 @@ public class EnqueueInterceptor implements InstanceMethodsAroundInterceptor, Ins
     public void beforeMethod(EnhancedInstance objInst, Method method, Object[] allArguments, Class<?>[] argumentsTypes,
         MethodInterceptResult result) throws Throwable {
         EnhancedInstance callbackInstance = (EnhancedInstance) allArguments[0];
-        Request request = (Request) objInst.getSkyWalkingDynamicField();
-        ContextManager.createLocalSpan("Async" + request.url().uri().getPath());
-
+        EnhanceRealCallInfo info = (EnhanceRealCallInfo) objInst.getSkyWalkingDynamicField();
+        Request request = (Request) info.getRequest();
+        AbstractSpan span = ContextManager.createLocalSpan("Async" + request.url().uri().getPath());
+        info.setSpan(span);
         /**
          * Here is the process about how to trace the async function.
          *
