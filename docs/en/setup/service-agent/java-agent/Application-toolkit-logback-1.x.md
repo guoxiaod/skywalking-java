@@ -57,13 +57,13 @@
     </configuration>
 ```
 
-* When you use `-javaagent` to active the SkyWalking tracer, logback will output **traceId**, if it existed. If the tracer is inactive, the output will be `TID: N/A`.
+* When you use `-javaagent` to active the SkyWalking tracer, logback will output **traceId**, if it existed. If the tracer is inactive, the output will be `TID:N/A`.
 
 # Print SkyWalking context in your logs
 
 * Your only need to replace pattern `%tid` or `%X{tid]}` with `%sw_ctx` or `%X{sw_ctx}`.
 
-* When you use `-javaagent` to active the SkyWalking tracer, logback will output `SW_CTX: [$serviceName,$instanceName,$traceId,$traceSegmentId,$spanId]`, if it existed. If the tracer is inactive, the output will be `SW_CTX: N/A`.
+* When you use `-javaagent` to active the SkyWalking tracer, logback will output `SW_CTX: [$serviceName,$instanceName,$traceId,$traceSegmentId,$spanId]`, if it existed. If the tracer is inactive, the output will be `SW_CTX:N/A`.
 
 # logstash logback plugin
 

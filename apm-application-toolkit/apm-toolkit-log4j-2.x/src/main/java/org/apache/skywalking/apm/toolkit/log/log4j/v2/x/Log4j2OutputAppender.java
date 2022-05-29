@@ -20,12 +20,12 @@ package org.apache.skywalking.apm.toolkit.log.log4j.v2.x;
 
 public class Log4j2OutputAppender {
     /**
-     * As default, append "TID: N/A" to the output message, if SkyWalking agent in active mode, append the real traceId
+     * As default, append "TID:N/A" to the output message, if SkyWalking agent in active mode, append the real traceId
      * in the recent Context, if existed, or empty String.
      *
      * @param toAppendTo origin output message.
      */
     public static void append(StringBuilder toAppendTo) {
-        toAppendTo.append("TID: N/A");
+        toAppendTo.append("TID:N/A");
     }
 }

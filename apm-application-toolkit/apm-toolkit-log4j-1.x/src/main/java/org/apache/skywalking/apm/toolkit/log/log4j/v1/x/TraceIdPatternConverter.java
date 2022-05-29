@@ -22,7 +22,7 @@ import org.apache.log4j.helpers.PatternConverter;
 import org.apache.log4j.spi.LoggingEvent;
 
 /**
- * Default implementation outputs "TID: N/A". But, if in SkyWalking agent active mode, output will become the real
+ * Default implementation outputs "TID:N/A". But, if in SkyWalking agent active mode, output will become the real
  * ids.
  * <p>
  */
@@ -30,6 +30,6 @@ import org.apache.log4j.spi.LoggingEvent;
 public class TraceIdPatternConverter extends PatternConverter {
     @Override
     protected String convert(LoggingEvent loggingEvent) {
-        return "TID: N/A";
+        return "TID:N/A";
     }
 }

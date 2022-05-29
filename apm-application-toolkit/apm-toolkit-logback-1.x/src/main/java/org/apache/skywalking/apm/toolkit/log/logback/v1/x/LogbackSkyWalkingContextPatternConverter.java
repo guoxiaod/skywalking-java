@@ -23,7 +23,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 
 public class LogbackSkyWalkingContextPatternConverter extends ClassicConverter {
     /**
-     * As default, return "SW_CTX: N/A" to the output message, if SkyWalking agent in active mode, return the real SkyWalking context
+     * As default, return "SW_CTX:N/A" to the output message, if SkyWalking agent in active mode, return the real SkyWalking context
      * in the recent Context, if existed.
      *
      * @param iLoggingEvent the event
@@ -31,6 +31,6 @@ public class LogbackSkyWalkingContextPatternConverter extends ClassicConverter {
      */
     @Override
     public String convert(ILoggingEvent iLoggingEvent) {
-        return "SW_CTX: N/A";
+        return "SW_CTX:N/A";
     }
 }

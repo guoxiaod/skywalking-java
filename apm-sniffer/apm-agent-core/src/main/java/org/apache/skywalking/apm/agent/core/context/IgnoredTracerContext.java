@@ -20,8 +20,13 @@ package org.apache.skywalking.apm.agent.core.context;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import org.apache.skywalking.apm.agent.core.context.ids.DistributedTraceId;
+import org.apache.skywalking.apm.agent.core.context.ids.PropagatedTraceId;
 import org.apache.skywalking.apm.agent.core.context.trace.AbstractSpan;
 import org.apache.skywalking.apm.agent.core.context.trace.NoopSpan;
+import org.apache.skywalking.apm.agent.core.context.trace.TraceSegment;
+import org.apache.skywalking.apm.agent.core.context.trace.TraceSegmentRef;
 
 /**
  * The <code>IgnoredTracerContext</code> represent a context should be ignored. So it just maintains the stack with an
@@ -36,9 +41,15 @@ public class IgnoredTracerContext implements AbstractTracerContext {
     private final CorrelationContext correlationContext;
     private final ExtensionContext extensionContext;
 
+    /**
+     * The final {@link TraceSegment}, which includes all finished spans.
+     */
+    private TraceSegment segment;
+
     private int stackDepth;
 
     public IgnoredTracerContext() {
+        this.segment = new TraceSegment();
         this.stackDepth = 0;
         this.correlationContext = new CorrelationContext();
         this.extensionContext = new ExtensionContext();
@@ -46,32 +57,47 @@ public class IgnoredTracerContext implements AbstractTracerContext {
 
     @Override
     public void inject(ContextCarrier carrier) {
+        carrier.setTraceId(getReadablePrimaryTraceId());
         this.correlationContext.inject(carrier);
     }
 
     @Override
     public void extract(ContextCarrier carrier) {
+        TraceSegmentRef ref = new TraceSegmentRef(carrier);
+        this.segment.ref(ref);
+        this.segment.relatedGlobalTrace(new PropagatedTraceId(carrier.getTraceId()));
         this.correlationContext.extract(carrier);
     }
 
     @Override
     public ContextSnapshot capture() {
-        return new ContextSnapshot(null, -1, null, null, correlationContext, extensionContext);
+        return new ContextSnapshot(
+                segment.getTraceSegmentId(),
+                0,
+                getPrimaryTraceId(),
+                segment.getRef().getParentEndpoint(),
+                correlationContext,
+                extensionContext);
     }
 
     @Override
     public void continued(ContextSnapshot snapshot) {
+        this.segment.relatedGlobalTrace(snapshot.getTraceId());
         this.correlationContext.continued(snapshot);
     }
 
     @Override
     public String getReadablePrimaryTraceId() {
-        return IGNORE_TRACE;
+        return getPrimaryTraceId().getId();
+    }
+
+    private DistributedTraceId getPrimaryTraceId() {
+        return segment.getRelatedGlobalTrace();
     }
 
     @Override
     public String getSegmentId() {
-        return IGNORE_TRACE;
+        return segment.getTraceSegmentId();
     }
 
     @Override

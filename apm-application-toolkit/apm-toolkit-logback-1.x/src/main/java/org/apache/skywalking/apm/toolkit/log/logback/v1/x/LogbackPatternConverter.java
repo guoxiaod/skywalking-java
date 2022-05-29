@@ -23,7 +23,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 
 public class LogbackPatternConverter extends ClassicConverter {
     /**
-     * As default, return "TID: N/A" to the output message, if SkyWalking agent in active mode, return the real traceId
+     * As default, return "TID:N/A" to the output message, if SkyWalking agent in active mode, return the real traceId
      * in the recent Context, if existed.
      *
      * @param iLoggingEvent the event
@@ -31,6 +31,6 @@ public class LogbackPatternConverter extends ClassicConverter {
      */
     @Override
     public String convert(ILoggingEvent iLoggingEvent) {
-        return "TID: N/A";
+        return "TID:N/A";
     }
 }

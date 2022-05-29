@@ -54,10 +54,10 @@ public class LogbackMDCPatternConverter extends MDCConverter {
     }
 
     public String convertTID(ILoggingEvent iLoggingEvent) {
-        return "TID: N/A";
+        return "TID:N/A";
     }
 
     public String convertSkyWalkingContext(ILoggingEvent iLoggingEvent) {
-        return "SW_CTX: N/A";
+        return "SW_CTX:N/A";
     }
 }
